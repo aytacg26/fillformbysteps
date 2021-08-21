@@ -3,3 +3,5 @@ An easy but effective react form. The idea and design of the form is easy but on
 Each validation take place in helpers file which can be improved easily and hence they will work at any component without touching any component.
 
 The form can be arranged and used any registration process...
+
+Not completed yet. Will be ready within 2 days... But main structure of the steps is ready.
