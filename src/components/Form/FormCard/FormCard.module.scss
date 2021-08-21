@@ -1,0 +1,18 @@
+@import '../../../scss/manifest';
+
+.FormCard {
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  .CardLabel {
+    margin: 15px 0;
+    font-size: 18px;
+    text-transform: capitalize;
+    color: $color-grey;
+    border-bottom: 1px solid $color-lightGrey;
+    padding-bottom: 8px;
+    padding-left: 5px;
+  }
+}

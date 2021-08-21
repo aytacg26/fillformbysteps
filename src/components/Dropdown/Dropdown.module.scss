@@ -1,0 +1,52 @@
+@import '../../scss/manifest';
+
+.dropContainer {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: 1px solid $color-blue;
+  border-radius: 5px;
+  padding-right: 10px;
+  max-width: 100%;
+
+  .DropLabel {
+    margin: 3px 3px 3px 10px;
+    font-size: 13px;
+    color: $color-blue;
+    position: absolute;
+    opacity: 0;
+    top: 10px;
+    transition: all 0.25s ease-in;
+  }
+
+  &:focus-within {
+    box-shadow: 0 0 5px $color-blue;
+
+    .DropLabel {
+      opacity: 1;
+      top: 0;
+    }
+  }
+
+  select {
+    height: 35px;
+    width: 100%;
+    border: 0 none;
+    outline: 0 none;
+    color: #000;
+    font-size: 15px;
+    margin-top: 15px;
+    background-color: transparent;
+    padding-left: 10px;
+
+    option {
+      color: #000;
+      font-weight: 600;
+    }
+
+    option:first-child {
+      color: $color-grey;
+      font-weight: 500;
+    }
+  }
+}

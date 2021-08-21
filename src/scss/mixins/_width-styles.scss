@@ -1,0 +1,40 @@
+@mixin full-height-width {
+  height: 100%;
+  width: 100%;
+}
+
+@mixin width-height($width, $height) {
+  width: $width;
+  height: $height;
+}
+
+@mixin minmax-height-width($height, $width, $type: 'max') {
+  @if $height == max-content {
+    #{$type}-height: -webkit-max-content;
+    #{$type}-height: -moz-max-content;
+    #{$type}-height: max-content;
+    #{$type}-width: $width;
+  } @else if $width == max-content {
+    #{$type}-width: -webkit-max-content;
+    #{$type}-width: -moz-max-content;
+    #{$type}-width: max-content;
+    #{$type}-height: $height;
+  } @else if $height == max-content and $width == max-content {
+    #{$type}-height: -webkit-max-content;
+    #{$type}-height: -moz-max-content;
+    #{$type}-height: max-content;
+    #{$type}-width: -webkit-max-content;
+    #{$type}-width: -moz-max-content;
+    #{$type}-width: max-content;
+  } @else {
+    #{$type}-height: $height;
+    #{$type}-width: $width;
+  }
+}
+
+@mixin image-fit($fitType: cover, $position: center) {
+  -o-object-fit: cover;
+  object-fit: cover;
+  -o-object-position: center;
+  object-position: center;
+}

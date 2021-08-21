@@ -1,0 +1,55 @@
+@import '../../scss/manifest.scss';
+
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  height: 50px;
+  border: 1px solid $color-blue;
+  margin: 5px 0;
+  border-radius: 5px;
+  position: relative;
+
+  &.invalid {
+    border: 1px solid $color-red;
+    background-color: rgb(255, 153, 142);
+  }
+
+  input {
+    border: 0 none;
+    height: 35px;
+    flex: 9;
+    background-color: transparent;
+    outline: 0 none;
+    padding-left: 10px;
+    font-size: 15px;
+    margin-top: 15px;
+
+    &::placeholder {
+      color: $color-platinum;
+    }
+
+    &.invalid::placeholder {
+      color: $color-textWhite;
+      font-weight: 600;
+    }
+  }
+
+  .InputLabel {
+    margin: 3px 3px 3px 10px;
+    font-size: 13px;
+    color: $color-blue;
+    position: absolute;
+    opacity: 0;
+    top: 10px;
+    transition: all 0.25s ease-in;
+  }
+
+  &:focus-within {
+    box-shadow: 0 0 5px $color-blue;
+
+    .InputLabel {
+      opacity: 1;
+      top: 0;
+    }
+  }
+}

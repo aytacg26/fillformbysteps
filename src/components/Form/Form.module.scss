@@ -1,0 +1,27 @@
+@import '../../scss/_manifest.scss';
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  width: max-content;
+  background-color: $color-textWhite;
+  padding: 5px 20px;
+
+  .circlesWrapper {
+    height: 70px;
+    display: flex;
+    width: max-content;
+    padding: 5px 10px;
+    align-items: center;
+    justify-content: space-around;
+    padding: 10px;
+  }
+
+  .formContainer {
+    margin-top: 25px;
+    width: 100%;
+    padding: 5px 15px;
+  }
+}
