@@ -11,13 +11,18 @@ import {
 } from '../../../Helpers/Helpers';
 import ErrorWindow from '../ErrorWindow/ErrorWindow';
 
-const ContactDetailsForm = ({ countries, forwardFormData, formTitle }) => {
+const ContactDetailsForm = ({
+  countries,
+  forwardFormData,
+  formTitle,
+  savedData,
+}) => {
   const [formData, setFormData] = useState({
-    email: '',
-    address: '',
-    city: '',
-    country: '',
-    mobile: '',
+    email: savedData.email ? savedData.email : '',
+    address: savedData.address ? savedData.address : '',
+    city: savedData.city ? savedData.city : '',
+    country: savedData.country ? savedData.country : '',
+    mobile: savedData.mobile ? savedData.mobile : '',
   });
   const { email, address, city, country, mobile } = formData;
   const [isValidEmail, setIsValidEmail] = useState(false);

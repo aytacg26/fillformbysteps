@@ -119,3 +119,11 @@ export const passwordValidation = (
     hasValidLength && hasValidLowerCase && hasValidUpperCase && hasValidSpecial
   );
 };
+
+export const comparePasswords = (password, confirmPassword) => {
+  if (password !== confirmPassword) {
+    return false;
+  }
+
+  return true;
+};

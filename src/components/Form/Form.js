@@ -6,6 +6,8 @@ import classes from './Form.module.scss';
 import MemberDetails from './MemberDetailsForm/MemberDetails';
 import PersonalForm from './PersonalForm/PersonalForm';
 import Button from '../Button/Button';
+import ConfirmationWindow from './ConfirmationWindow/ConfirmationWindow';
+import RegistrationMessageWindow from './RegistrationMessageWindow/RegistrationMessageWindow';
 
 const genderOptions = [
   {
@@ -350,6 +352,20 @@ const Form = () => {
     setCount((prevState) => prevState - 1);
   };
 
+  const formConfirmationHandler = () => {
+    //This will send data to database
+    console.log(formData);
+    setCount((prevState) => prevState + 1);
+
+    let success = false;
+    //After a success message from server, formData will be emptied and count will be 0
+    if (success) {
+      //This will send user to the init form, but in a real project, we need to open login page (and upon email confirmation, user will be able to login)
+      setFormData({});
+      setCount(0);
+    }
+  };
+
   return (
     <div className={classes.container}>
       <div className={classes.circlesWrapper}>
@@ -381,16 +397,34 @@ const Form = () => {
             countries={countries}
             formTitle={formTitles[1]}
             forwardFormData={formDataHandler}
+            savedData={{
+              email: formData.email,
+              address: formData.address,
+              city: formData.city,
+              country: formData.country,
+              mobile: formData.mobile,
+            }}
           />
         )}
         {count === 2 && (
           <MemberDetails
             formTitle={formTitles[2]}
             forwardFormData={formDataHandler}
+            savedData={{
+              username: formData.username,
+              password: formData.password,
+            }}
           />
         )}
+        {count === 3 && (
+          <ConfirmationWindow
+            formData={formData}
+            forwardConfirmation={formConfirmationHandler}
+          />
+        )}
+        {count === 4 && <RegistrationMessageWindow />}
       </div>
-      {count > 0 && (
+      {count > 0 && count !== 4 && (
         <Button
           title={<ArrowBackIcon />}
           className={classes.FormBtn}

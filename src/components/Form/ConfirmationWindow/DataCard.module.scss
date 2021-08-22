@@ -1,0 +1,35 @@
+@import '../../../scss/manifest';
+
+.dataCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 3px 5px;
+
+  padding-right: 5px;
+  flex: 5;
+  border-radius: 5px;
+  min-height: 35px;
+  border-bottom: 1px solid $color-platinum;
+
+  .Label {
+    color: $color-grey;
+    padding: 5px;
+
+    flex: 3;
+    font-size: 14px;
+    border-radius: 5px 0 0 5px;
+  }
+
+  .Data {
+    flex: 2;
+    font-size: 12.5px;
+    color: $color-grey;
+    background-color: $color-textWhite;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 20px;
+  }
+}

@@ -11,14 +11,15 @@ const Dropdown = ({ options, onChange, selectTitle, title, name, value }) => {
   return (
     <div className={classes.dropContainer}>
       <label className={classes.DropLabel}>{title}</label>
-      <select onChange={onChange} className={classes.Dropdown} name={name}>
+      <select
+        onChange={onChange}
+        className={classes.Dropdown}
+        name={name}
+        defaultValue={value}
+      >
         <option value=''>{selectTitle}</option>
         {optionList.map((opt) => (
-          <option
-            value={opt.value}
-            key={opt.title}
-            selected={opt.value === value}
-          >
+          <option value={opt.value} key={opt.title}>
             {opt.title}
           </option>
         ))}

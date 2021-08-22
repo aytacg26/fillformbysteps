@@ -1,0 +1,21 @@
+@import '../../../scss/manifest';
+
+.desc {
+  max-width: 100%;
+  padding: 10px;
+
+  p {
+    margin-bottom: 5px;
+    color: $color-grey;
+  }
+
+  small {
+    font-size: 11.5px;
+    color: $color-grey;
+  }
+}
+
+.dataCardsContainer {
+  display: flex;
+  flex-flow: column wrap;
+}
