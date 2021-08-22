@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import Circle from '../Circle/Circle';
-import Dropdown from '../Dropdown/Dropdown';
-import Input from '../Input/Input';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import ContactDetailsForm from './ContactDetailsForm/ContactDetailsForm';
 import classes from './Form.module.scss';
 import MemberDetails from './MemberDetailsForm/MemberDetails';
 import PersonalForm from './PersonalForm/PersonalForm';
+import Button from '../Button/Button';
 
 const genderOptions = [
   {
@@ -346,7 +346,10 @@ const Form = () => {
     setFormData((prevFormData) => ({ ...prevFormData, ...data }));
   };
 
-  console.log(formData);
+  const previousFormHandler = () => {
+    setCount((prevState) => prevState - 1);
+  };
+
   return (
     <div className={classes.container}>
       <div className={classes.circlesWrapper}>
@@ -365,6 +368,12 @@ const Form = () => {
             genderOptions={genderOptions}
             forwardFormData={formDataHandler}
             formTitle={formTitles[0]}
+            savedData={{
+              name: formData.name,
+              surname: formData.surname,
+              birthdate: formData.birthdate,
+              gender: formData.gender,
+            }}
           />
         )}
         {count === 1 && (
@@ -381,6 +390,13 @@ const Form = () => {
           />
         )}
       </div>
+      {count > 0 && (
+        <Button
+          title={<ArrowBackIcon />}
+          className={classes.FormBtn}
+          onClick={previousFormHandler}
+        />
+      )}
     </div>
   );
 };

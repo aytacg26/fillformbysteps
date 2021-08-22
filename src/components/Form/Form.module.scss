@@ -9,6 +9,26 @@
   background-color: $color-textWhite;
   padding: 5px 20px;
 
+  .FormBtn {
+    width: 60px;
+    height: 35px;
+    align-self: flex-start;
+    background-color: $color-platinum;
+    border: 0 none;
+    border-radius: 10px;
+    cursor: pointer;
+    color: $color-grey;
+    font-weight: 600;
+    padding: 5px 3px;
+    transition: linear 0.35s ease-in;
+    transition-property: background-color, border-radius;
+
+    &:hover {
+      background-color: lighten($color-platinum, 4%);
+      border-radius: 20px;
+    }
+  }
+
   .circlesWrapper {
     height: 70px;
     display: flex;

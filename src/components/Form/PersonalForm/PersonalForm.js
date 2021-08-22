@@ -6,12 +6,17 @@ import FormCard from '../FormCard/FormCard';
 import { textValidation, birthdateValidation } from '../../../Helpers/Helpers';
 import ErrorWindow from '../ErrorWindow/ErrorWindow';
 
-const PersonalForm = ({ genderOptions, forwardFormData, formTitle }) => {
+const PersonalForm = ({
+  genderOptions,
+  forwardFormData,
+  formTitle,
+  savedData,
+}) => {
   const [personalFormData, setPersonalFormData] = useState({
-    name: '',
-    surname: '',
-    birthdate: '',
-    gender: '',
+    name: savedData.name ? savedData.name : '',
+    surname: savedData.surname ? savedData.surname : '',
+    birthdate: savedData.birthdate ? savedData.birthdate : '',
+    gender: savedData.gender ? savedData.gender : '',
   });
   const { name, surname, birthdate, gender } = personalFormData;
   const [isValidName, setIsValidName] = useState(false);
@@ -19,6 +24,9 @@ const PersonalForm = ({ genderOptions, forwardFormData, formTitle }) => {
   const [isValidBirthdate, setIsValidBirthdate] = useState(false);
   const [runReset, setRunReset] = useState(false);
   const [errors, setErrors] = useState([]);
+
+  console.log('called back....');
+  console.log(savedData);
 
   const resetValidation = (fieldName) => {
     switch (fieldName) {
@@ -94,8 +102,6 @@ const PersonalForm = ({ genderOptions, forwardFormData, formTitle }) => {
       }
     }
   };
-
-  console.log(errors);
 
   return (
     <FormCard cardtitle={formTitle}>

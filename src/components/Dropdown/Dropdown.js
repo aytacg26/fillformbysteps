@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import classes from './Dropdown.module.scss';
 
-const Dropdown = ({ options, onChange, selectTitle, title, name }) => {
+const Dropdown = ({ options, onChange, selectTitle, title, name, value }) => {
   const optionList = options ? options : [];
 
   if (optionList.length === 0) {
@@ -14,7 +14,11 @@ const Dropdown = ({ options, onChange, selectTitle, title, name }) => {
       <select onChange={onChange} className={classes.Dropdown} name={name}>
         <option value=''>{selectTitle}</option>
         {optionList.map((opt) => (
-          <option value={opt.value} key={opt.title}>
+          <option
+            value={opt.value}
+            key={opt.title}
+            selected={opt.value === value}
+          >
             {opt.title}
           </option>
         ))}
