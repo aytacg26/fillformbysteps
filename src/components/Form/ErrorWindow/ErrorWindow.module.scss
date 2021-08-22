@@ -1,0 +1,17 @@
+@import '../../../scss/manifest';
+
+.ErrorWindow {
+  display: flex;
+  flex-direction: column nowrap;
+  max-width: 290px;
+  margin: 10px auto;
+
+  ul {
+    list-style: upper-roman;
+    li {
+      margin: 10px 0;
+      font-size: 13.5px;
+      color: $color-red;
+    }
+  }
+}

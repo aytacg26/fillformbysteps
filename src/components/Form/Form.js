@@ -4,6 +4,7 @@ import Dropdown from '../Dropdown/Dropdown';
 import Input from '../Input/Input';
 import ContactDetailsForm from './ContactDetailsForm/ContactDetailsForm';
 import classes from './Form.module.scss';
+import MemberDetails from './MemberDetailsForm/MemberDetails';
 import PersonalForm from './PersonalForm/PersonalForm';
 
 const genderOptions = [
@@ -370,6 +371,12 @@ const Form = () => {
           <ContactDetailsForm
             countries={countries}
             formTitle={formTitles[1]}
+            forwardFormData={formDataHandler}
+          />
+        )}
+        {count === 2 && (
+          <MemberDetails
+            formTitle={formTitles[2]}
             forwardFormData={formDataHandler}
           />
         )}

@@ -9,6 +9,7 @@ import {
   textValidation,
   mobileValidation,
 } from '../../../Helpers/Helpers';
+import ErrorWindow from '../ErrorWindow/ErrorWindow';
 
 const ContactDetailsForm = ({ countries, forwardFormData, formTitle }) => {
   const [formData, setFormData] = useState({
@@ -23,9 +24,42 @@ const ContactDetailsForm = ({ countries, forwardFormData, formTitle }) => {
   const [isValidAddress, setIsValidAddess] = useState(false);
   const [isValidCity, setIsValidCity] = useState(false);
   const [isValidMobile, setIsValidMobile] = useState(false);
+  const [runReset, setRunReset] = useState(false);
+  const [errors, setErrors] = useState([]);
+
+  const addressValidation = () => {
+    return textValidation(address, 30);
+  };
+
+  const resetValidation = (fieldName) => {
+    switch (fieldName) {
+      case 'email':
+        setIsValidEmail(!emailValidation(email));
+
+        break;
+
+      case 'address':
+        setIsValidAddess(!addressValidation());
+        break;
+      case 'city':
+        setIsValidCity(!textValidation(city));
+        break;
+      case 'mobile':
+        setIsValidMobile(!mobileValidation(mobile));
+        break;
+      default:
+        break;
+    }
+    setErrors(errors.filter((error) => error.id !== fieldName));
+  };
 
   const formEntryHandler = (e) => {
     const { name, value } = e.target;
+
+    if (runReset) {
+      resetValidation(name);
+    }
+
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
@@ -35,7 +69,7 @@ const ContactDetailsForm = ({ countries, forwardFormData, formTitle }) => {
     //City validation should be done according to the selected country.
     //In general, city must be a drop down and the list of cities should be loaded upon country selection
     const _isValidEmail = emailValidation(email);
-    const _isValidAddress = textValidation(address, 45);
+    const _isValidAddress = addressValidation();
     const _isValidCity = textValidation(city);
     const _isValidMobile = mobileValidation(mobile);
 
@@ -46,6 +80,36 @@ const ContactDetailsForm = ({ countries, forwardFormData, formTitle }) => {
 
     if (_isValidEmail && _isValidAddress && _isValidCity && _isValidMobile) {
       forwardFormData(formData);
+    } else {
+      setRunReset(true);
+
+      if (!_isValidEmail) {
+        setErrors((prevErrors) => [
+          ...prevErrors,
+          { id: 'email', message: 'Please enter a valid email address.' },
+        ]);
+      }
+
+      if (!_isValidAddress) {
+        setErrors((prevErrors) => [
+          ...prevErrors,
+          { id: 'address', message: 'Please enter more detailed address.' },
+        ]);
+      }
+
+      if (!_isValidCity) {
+        setErrors((prevErrors) => [
+          ...prevErrors,
+          { id: 'city', message: 'Please enter a valid city.' },
+        ]);
+      }
+
+      if (!_isValidMobile) {
+        setErrors((prevErrors) => [
+          ...prevErrors,
+          { id: 'mobile', message: 'Please enter a valid mobile number.' },
+        ]);
+      }
     }
   };
 
@@ -99,6 +163,7 @@ const ContactDetailsForm = ({ countries, forwardFormData, formTitle }) => {
         />
         <Button title='Continue' type='submit' />
       </form>
+      <ErrorWindow errorsArr={errors} />
     </FormCard>
   );
 };

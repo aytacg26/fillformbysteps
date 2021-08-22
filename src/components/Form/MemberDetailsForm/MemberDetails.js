@@ -2,6 +2,7 @@ import { useState } from 'react';
 import FormCard from '../FormCard/FormCard';
 import Input from '../../Input/Input';
 import Button from '../../Button/Button';
+import { passwordValidation } from '../../../Helpers/Helpers';
 
 /**
  *     username: '',
@@ -21,11 +22,18 @@ const MemberDetails = ({ formTitle, forwardFormData }) => {
     setMemberData((prevState) => ({ ...prevState, [name]: value }));
   };
 
+  const comparePasswordsHandler = () => {
+    console.log(password);
+    console.log(passwordConfirm);
+  };
+
   const formSubmitHandler = (e) => {
     e.preventDefault();
 
+    console.log(memberData);
+
     //Validation required
-    forwardFormData(memberData);
+    //forwardFormData(memberData);
   };
 
   return (
@@ -38,6 +46,7 @@ const MemberDetails = ({ formTitle, forwardFormData }) => {
           name='username'
           onChange={formEntryHandler}
           value={username}
+          maxLength='20'
         />
         <Input
           label='Password'
@@ -46,6 +55,7 @@ const MemberDetails = ({ formTitle, forwardFormData }) => {
           name='password'
           onChange={formEntryHandler}
           value={password}
+          maxLength='30'
         />
         <Input
           label='Confirm Password'
@@ -54,6 +64,8 @@ const MemberDetails = ({ formTitle, forwardFormData }) => {
           name='passwordConfirm'
           onChange={formEntryHandler}
           value={passwordConfirm}
+          onBlur={comparePasswordsHandler}
+          maxLength='30'
         />
         <Button type='submit' title='Continue' />
       </form>

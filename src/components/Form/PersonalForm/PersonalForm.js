@@ -4,6 +4,7 @@ import Dropdown from '../../Dropdown/Dropdown';
 import Button from '../../Button/Button';
 import FormCard from '../FormCard/FormCard';
 import { textValidation, birthdateValidation } from '../../../Helpers/Helpers';
+import ErrorWindow from '../ErrorWindow/ErrorWindow';
 
 const PersonalForm = ({ genderOptions, forwardFormData, formTitle }) => {
   const [personalFormData, setPersonalFormData] = useState({
@@ -16,15 +17,36 @@ const PersonalForm = ({ genderOptions, forwardFormData, formTitle }) => {
   const [isValidName, setIsValidName] = useState(false);
   const [isValidSurname, setIsValidSurname] = useState(false);
   const [isValidBirthdate, setIsValidBirthdate] = useState(false);
+  const [runReset, setRunReset] = useState(false);
+  const [errors, setErrors] = useState([]);
+
+  const resetValidation = (fieldName) => {
+    switch (fieldName) {
+      case 'name':
+        setIsValidName(!textValidation(name));
+        break;
+
+      case 'surname':
+        setIsValidSurname(!textValidation(surname));
+        break;
+
+      case 'birthdate':
+        setIsValidBirthdate(false);
+        break;
+
+      default:
+        break;
+    }
+
+    setErrors(errors.filter((err) => err.id !== fieldName));
+  };
 
   const formEntryHandler = (e) => {
     const { name, value } = e.target;
 
-    name === 'name'
-      ? setIsValidName(false)
-      : name === 'surname'
-      ? setIsValidSurname(false)
-      : setIsValidBirthdate(false);
+    if (runReset) {
+      resetValidation(name);
+    }
 
     setPersonalFormData((prevState) => ({ ...prevState, [name]: value }));
   };
@@ -43,8 +65,37 @@ const PersonalForm = ({ genderOptions, forwardFormData, formTitle }) => {
 
     if (isValidName && isValidSurname && isValidAge) {
       forwardFormData(personalFormData);
+    } else {
+      setRunReset(true);
+
+      if (!isValidName) {
+        setErrors((prevErrors) => [
+          ...prevErrors,
+          { id: 'name', message: 'Please enter a valid name' },
+        ]);
+      }
+
+      if (!isValidSurname) {
+        setErrors((prevErrors) => [
+          ...prevErrors,
+          { id: 'surname', message: 'Please enter a valid surname' },
+        ]);
+      }
+
+      if (!isValidAge) {
+        setErrors((prevErrors) => [
+          ...prevErrors,
+          {
+            id: 'birthdate',
+            message:
+              'Please enter a valid age. Age cannot be less than 15 and greater than 125',
+          },
+        ]);
+      }
     }
   };
+
+  console.log(errors);
 
   return (
     <FormCard cardtitle={formTitle}>
@@ -98,6 +149,7 @@ const PersonalForm = ({ genderOptions, forwardFormData, formTitle }) => {
         />
         <Button type='submit' title='Continue' />
       </form>
+      <ErrorWindow errorsArr={errors} />
     </FormCard>
   );
 };
