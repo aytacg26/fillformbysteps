@@ -341,6 +341,7 @@ const Form = () => {
   });
 
   const [count, setCount] = useState(0);
+  const [statusCode, setStatusCode] = useState(0);
 
   const formDataHandler = (data) => {
     console.log(data);
@@ -359,6 +360,8 @@ const Form = () => {
 
     let success = false;
     //After a success message from server, formData will be emptied and count will be 0
+    //set status code here...
+    setStatusCode(400);
     if (success) {
       //This will send user to the init form, but in a real project, we need to open login page (and upon email confirmation, user will be able to login)
       setFormData({});
@@ -422,9 +425,9 @@ const Form = () => {
             forwardConfirmation={formConfirmationHandler}
           />
         )}
-        {count === 4 && <RegistrationMessageWindow />}
+        {count === 4 && <RegistrationMessageWindow statusCode={statusCode} />}
       </div>
-      {count > 0 && count !== 4 && (
+      {count > 0 && statusCode !== 200 && (
         <Button
           title={<ArrowBackIcon />}
           className={classes.FormBtn}

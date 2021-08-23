@@ -1,0 +1,41 @@
+@import '../../../scss/manifest';
+
+.MsgContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  border-radius: 10px;
+
+  header {
+    width: 100%;
+    font-size: 18px;
+    font-weight: 800;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+
+    border-radius: 10px 10px 0 0;
+  }
+
+  .AnimationSection {
+    margin-bottom: 25px;
+  }
+
+  .FooterMsg {
+    margin: 25px 0;
+    max-width: 300px;
+
+    p {
+      margin: 4px 0;
+      font-size: 14.5px;
+      color: $color-grey;
+      text-align: center;
+    }
+
+    small {
+      font-size: 11px;
+    }
+  }
+}
