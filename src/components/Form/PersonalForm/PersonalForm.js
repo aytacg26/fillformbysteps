@@ -101,7 +101,7 @@ const PersonalForm = ({
     gender: state.gender,
   };
 
-  const resetValidation = (fieldName) => {
+  const fieldValidation = (fieldName) => {
     switch (fieldName) {
       case 'name':
         dispatch({ type: 'VALIDATE_NAME' });
@@ -130,7 +130,7 @@ const PersonalForm = ({
     const { name, value } = e.target;
 
     if (state.runReset) {
-      resetValidation(name);
+      fieldValidation(name);
     }
 
     dispatch({ type: 'FORM_ENTRY', payload: { [name]: value } });
@@ -185,6 +185,46 @@ const PersonalForm = ({
     }
   };
 
+  const inputBlurHandler = (e) => {
+    fieldValidation(e.target.name);
+
+    switch (e.target.name) {
+      case 'name':
+        if (!state.isValid.name) {
+          dispatch({
+            type: 'ERROR',
+            payload: { id: 'name', message: 'Please enter a valid name' },
+          });
+        }
+
+        break;
+
+      case 'surname':
+        if (!state.isValid.surname) {
+          dispatch({
+            type: 'ERROR',
+            payload: { id: 'surname', message: 'Please enter a valid surname' },
+          });
+        }
+        break;
+
+      case 'birthdate':
+        if (!state.isValid.birthdate) {
+          dispatch({
+            type: 'ERROR',
+            payload: {
+              id: 'birthdate',
+              message:
+                'Please enter a valid age. Age cannot be less than 15 and greater than 125',
+            },
+          });
+        }
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <FormCard cardtitle={formTitle}>
       <form onSubmit={formSubmitHandler}>
@@ -198,6 +238,7 @@ const PersonalForm = ({
           }`}
           name='name'
           onChange={formEntryHandler}
+          onBlur={inputBlurHandler}
           value={state.name}
           invalid={state.isValid.name}
         />
@@ -211,6 +252,7 @@ const PersonalForm = ({
               : 'Please enter a valid surname'
           }`}
           onChange={formEntryHandler}
+          onBlur={inputBlurHandler}
           value={state.surname}
           invalid={state.isValid.surname}
         />
@@ -224,6 +266,7 @@ const PersonalForm = ({
               : 'Please enter a valid birthdate (Min age 15)'
           }`}
           onChange={formEntryHandler}
+          onBlur={inputBlurHandler}
           value={state.birthdate}
           invalid={state.isValid.birthdate}
         />
