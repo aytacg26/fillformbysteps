@@ -1,4 +1,3 @@
-import React, { Fragment } from 'react';
 import AnimatedMark from '../AnimatedMark/AnimatedMark';
 import classes from './RegistrationMessageWindow.module.scss';
 

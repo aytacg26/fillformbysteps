@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
 import Input from '../../Input/Input';
 import Dropdown from '../../Dropdown/Dropdown';
 import Button from '../../Button/Button';
@@ -6,99 +6,184 @@ import FormCard from '../FormCard/FormCard';
 import { textValidation, birthdateValidation } from '../../../Helpers/Helpers';
 import ErrorWindow from '../ErrorWindow/ErrorWindow';
 
+const personalFormReducer = (state, action) => {
+  const { type, payload } = action;
+
+  const validation = (key, value, state) => {
+    switch (key) {
+      case 'name':
+        return { ...state, name: !textValidation(value) };
+
+      case 'surname':
+        return {
+          ...state,
+          surname: !textValidation(value),
+        };
+
+      case 'birthdate':
+        return { ...state, birthdate: !birthdateValidation(value, 15) };
+
+      default:
+        return state;
+    }
+  };
+
+  switch (type) {
+    case 'FORM_ENTRY':
+      const isvalid = state.isValid;
+      const key = Object.keys(payload)[0];
+      const val = Object.values(payload)[0];
+
+      return { ...state, ...payload, isValid: validation(key, val, isvalid) };
+
+    case 'VALIDATE_NAME':
+      return {
+        ...state,
+        isValid: { ...state.isValid, name: !textValidation(state.name) },
+      };
+
+    case 'VALIDATE_SURNAME':
+      return {
+        ...state,
+        isValid: { ...state.isValid, surname: !textValidation(state.surname) },
+      };
+
+    case 'VALIDATE_BIRTHDATE':
+      return {
+        ...state,
+        isValid: {
+          ...state.isValid,
+          birthdate: !birthdateValidation(state.birthdate, 15),
+        },
+      };
+
+    case 'VALIDATION':
+      return {
+        ...state,
+        isValid: {
+          name: payload.name,
+          surname: payload.surname,
+          birthdate: payload.birthdate,
+        },
+      };
+
+    case 'ERROR':
+      return { ...state, errors: [...state.errors, payload] };
+
+    case 'REMOVE_ERROR':
+      return { ...state, errors: payload };
+
+    case 'RESET':
+      return { ...state, runReset: payload };
+
+    default:
+      return state;
+  }
+};
+
 const PersonalForm = ({
   genderOptions,
   forwardFormData,
   formTitle,
   savedData,
 }) => {
-  const [personalFormData, setPersonalFormData] = useState({
+  const [state, dispatch] = useReducer(personalFormReducer, {
     name: savedData.name ? savedData.name : '',
     surname: savedData.surname ? savedData.surname : '',
     birthdate: savedData.birthdate ? savedData.birthdate : '',
     gender: savedData.gender ? savedData.gender : '',
+    isValid: { name: false, surname: false, birthdate: false },
+    errors: [],
+    runReset: false,
   });
-  const { name, surname, birthdate, gender } = personalFormData;
-  const [isValidName, setIsValidName] = useState(false);
-  const [isValidSurname, setIsValidSurname] = useState(false);
-  const [isValidBirthdate, setIsValidBirthdate] = useState(false);
-  const [runReset, setRunReset] = useState(false);
-  const [errors, setErrors] = useState([]);
 
-  console.log('called back....');
-  console.log(savedData);
+  const personalFormData = {
+    name: state.name,
+    surname: state.surname,
+    birthdate: state.birthdate,
+    gender: state.gender,
+  };
 
   const resetValidation = (fieldName) => {
     switch (fieldName) {
       case 'name':
-        setIsValidName(!textValidation(name));
+        dispatch({ type: 'VALIDATE_NAME' });
         break;
 
       case 'surname':
-        setIsValidSurname(!textValidation(surname));
+        dispatch({ type: 'VALIDATE_SURNAME' });
         break;
 
       case 'birthdate':
-        setIsValidBirthdate(false);
+        dispatch({ type: 'VALIDATE_BIRTHDATE' });
         break;
 
       default:
         break;
     }
 
-    setErrors(errors.filter((err) => err.id !== fieldName));
+    dispatch({
+      type: 'REMOVE_ERROR',
+      payload: state.errors.filter((err) => err.id !== fieldName),
+    });
+    // setErrors(errors.filter((err) => err.id !== fieldName));
   };
 
   const formEntryHandler = (e) => {
     const { name, value } = e.target;
 
-    if (runReset) {
+    if (state.runReset) {
       resetValidation(name);
     }
 
-    setPersonalFormData((prevState) => ({ ...prevState, [name]: value }));
+    dispatch({ type: 'FORM_ENTRY', payload: { [name]: value } });
   };
 
   const formSubmitHandler = (e) => {
     e.preventDefault();
 
     //Validation Process
-    const isValidName = textValidation(name);
-    const isValidSurname = textValidation(surname);
-    const isValidAge = birthdateValidation(birthdate, 15);
+    const isValidName = textValidation(state.name);
+    const isValidSurname = textValidation(state.surname);
+    const isValidAge = birthdateValidation(state.birthdate, 15);
 
-    setIsValidName(!isValidName);
-    setIsValidSurname(!isValidSurname);
-    setIsValidBirthdate(!isValidAge);
+    dispatch({
+      type: 'VALIDATION',
+      payload: {
+        name: !isValidName,
+        surname: !isValidSurname,
+        birthdate: !isValidAge,
+      },
+    });
 
     if (isValidName && isValidSurname && isValidAge) {
       forwardFormData(personalFormData);
     } else {
-      setRunReset(true);
+      dispatch({ type: 'RESET', payload: true });
 
       if (!isValidName) {
-        setErrors((prevErrors) => [
-          ...prevErrors,
-          { id: 'name', message: 'Please enter a valid name' },
-        ]);
+        dispatch({
+          type: 'ERROR',
+          payload: { id: 'name', message: 'Please enter a valid name' },
+        });
       }
 
       if (!isValidSurname) {
-        setErrors((prevErrors) => [
-          ...prevErrors,
-          { id: 'surname', message: 'Please enter a valid surname' },
-        ]);
+        dispatch({
+          type: 'ERROR',
+          payload: { id: 'surname', message: 'Please enter a valid surname' },
+        });
       }
 
       if (!isValidAge) {
-        setErrors((prevErrors) => [
-          ...prevErrors,
-          {
-            id: 'birthdate',
+        dispatch({
+          type: 'ERROR',
+          payload: {
+            id: 'birhdate',
             message:
               'Please enter a valid age. Age cannot be less than 15 and greater than 125',
           },
-        ]);
+        });
       }
     }
   };
@@ -110,40 +195,40 @@ const PersonalForm = ({
           label='Name'
           type='text'
           placeholder={`${
-            !isValidName
+            !state.isValid.name
               ? 'Please enter your name'
               : 'Please enter a valid name'
           }`}
           name='name'
           onChange={formEntryHandler}
-          value={name}
-          invalid={isValidName}
+          value={state.name}
+          invalid={state.isValid.name}
         />
         <Input
           label='Surname'
           name='surname'
           type='text'
           placeholder={`${
-            !isValidSurname
+            !state.isValid.surname
               ? 'Please enter your surname'
               : 'Please enter a valid surname'
           }`}
           onChange={formEntryHandler}
-          value={surname}
-          invalid={isValidSurname}
+          value={state.surname}
+          invalid={state.isValid.surname}
         />
         <Input
           label='Date of Birth'
           name='birthdate'
           type='date'
           placeholder={`${
-            !isValidBirthdate
+            !state.isValid.birthdate
               ? 'Please enter your date of birth'
               : 'Please enter a valid birthdate (Min age 15)'
           }`}
           onChange={formEntryHandler}
-          value={birthdate}
-          invalid={isValidBirthdate}
+          value={state.birthdate}
+          invalid={state.isValid.birthdate}
         />
         <Dropdown
           options={genderOptions}
@@ -151,11 +236,11 @@ const PersonalForm = ({
           selectTitle='Please select gender'
           title='Gender'
           onChange={formEntryHandler}
-          value={gender}
+          value={state.gender}
         />
         <Button type='submit' title='Continue' />
       </form>
-      <ErrorWindow errorsArr={errors} />
+      <ErrorWindow errorsArr={state.errors} />
     </FormCard>
   );
 };
