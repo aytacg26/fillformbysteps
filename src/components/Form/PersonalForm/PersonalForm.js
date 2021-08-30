@@ -187,29 +187,25 @@ const PersonalForm = ({
 
   const inputBlurHandler = (e) => {
     fieldValidation(e.target.name);
-
     switch (e.target.name) {
       case 'name':
-        if (!state.isValid.name) {
+        if (!textValidation(e.target.value)) {
           dispatch({
             type: 'ERROR',
             payload: { id: 'name', message: 'Please enter a valid name' },
           });
         }
-
         break;
-
       case 'surname':
-        if (!state.isValid.surname) {
+        if (!textValidation(e.target.value)) {
           dispatch({
             type: 'ERROR',
             payload: { id: 'surname', message: 'Please enter a valid surname' },
           });
         }
         break;
-
       case 'birthdate':
-        if (!state.isValid.birthdate) {
+        if (!birthdateValidation(e.target.value, 15)) {
           dispatch({
             type: 'ERROR',
             payload: {
