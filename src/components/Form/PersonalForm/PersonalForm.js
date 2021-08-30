@@ -39,22 +39,19 @@ const personalFormReducer = (state, action) => {
     case 'VALIDATE_NAME':
       return {
         ...state,
-        isValid: { ...state.isValid, name: !textValidation(state.name) },
+        isValid: validation('name', state.name, state.isValid),
       };
 
     case 'VALIDATE_SURNAME':
       return {
         ...state,
-        isValid: { ...state.isValid, surname: !textValidation(state.surname) },
+        isValid: validation('surname', state.surname, state.isValid),
       };
 
     case 'VALIDATE_BIRTHDATE':
       return {
         ...state,
-        isValid: {
-          ...state.isValid,
-          birthdate: !birthdateValidation(state.birthdate, 15),
-        },
+        isValid: validation('birthdate', state.birthdate, state.isValid),
       };
 
     case 'VALIDATION':
@@ -179,7 +176,7 @@ const PersonalForm = ({
         dispatch({
           type: 'ERROR',
           payload: {
-            id: 'birhdate',
+            id: 'birthdate',
             message:
               'Please enter a valid age. Age cannot be less than 15 and greater than 125',
           },
