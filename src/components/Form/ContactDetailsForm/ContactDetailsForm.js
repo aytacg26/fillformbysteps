@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useReducer } from 'react';
 import Button from '../../Button/Button';
 import Dropdown from '../../Dropdown/Dropdown';
 import Input from '../../Input/Input';
@@ -11,61 +11,142 @@ import {
 } from '../../../Helpers/Helpers';
 import ErrorWindow from '../ErrorWindow/ErrorWindow';
 
+const contactFormReducer = (state, action) => {
+  const { type, payload } = action;
+
+  const validation = (key, value, state) => {
+    switch (key) {
+      case 'email':
+        return { ...state, email: !emailValidation(value) };
+
+      case 'city':
+        return {
+          ...state,
+          city: !textValidation(value),
+        };
+
+      case 'address':
+        return { ...state, address: !textValidation(value, 30) };
+
+      case 'mobile':
+        return { ...state, mobile: !mobileValidation(value) };
+
+      default:
+        return state;
+    }
+  };
+
+  switch (type) {
+    case 'FORM_ENTRY':
+      const isvalid = state.isValid;
+      const key = Object.keys(payload)[0];
+      const val = Object.values(payload)[0];
+      return { ...state, ...payload, isValid: validation(key, val, isvalid) };
+
+    case 'VALIDATE_EMAIL':
+      return {
+        ...state,
+        isValid: validation('email', state.email, state.isValid),
+      };
+    case 'VALIDATE_ADDRESS':
+      return {
+        ...state,
+        isValid: validation('address', state.address, state.isValid),
+      };
+    case 'VALIDATE_CITY':
+      return {
+        ...state,
+        isValid: validation('city', state.city, state.isValid),
+      };
+    case 'VALIDATE_MOBILE':
+      return {
+        ...state,
+        isValid: validation('mobile', state.mobile, state.isValid),
+      };
+
+    case 'VALIDATION':
+      return {
+        ...state,
+        isValid: payload,
+      };
+
+    case 'ERROR':
+      return { ...state, errors: [...state.errors, payload] };
+
+    case 'REMOVE_ERROR':
+      return { ...state, errors: payload };
+
+    case 'RESET':
+      return { ...state, runReset: payload };
+
+    default:
+      return state;
+  }
+};
+
 const ContactDetailsForm = ({
   countries,
   forwardFormData,
   formTitle,
   savedData,
 }) => {
-  const [formData, setFormData] = useState({
+  const [state, dispatch] = useReducer(contactFormReducer, {
     email: savedData.email ? savedData.email : '',
     address: savedData.address ? savedData.address : '',
     city: savedData.city ? savedData.city : '',
     country: savedData.country ? savedData.country : '',
     mobile: savedData.mobile ? savedData.mobile : '',
+    isValid: { email: false, address: false, city: false, mobile: false },
+    runReset: false,
+    errors: [],
   });
-  const { email, address, city, country, mobile } = formData;
-  const [isValidEmail, setIsValidEmail] = useState(false);
-  const [isValidAddress, setIsValidAddess] = useState(false);
-  const [isValidCity, setIsValidCity] = useState(false);
-  const [isValidMobile, setIsValidMobile] = useState(false);
-  const [runReset, setRunReset] = useState(false);
-  const [errors, setErrors] = useState([]);
+
+  const formData = {
+    email: state.email,
+    address: state.address,
+    city: state.city,
+    country: state.country,
+    mobile: state.mobile,
+  };
 
   const addressValidation = () => {
-    return textValidation(address, 30);
+    return textValidation(state.address, 30);
   };
 
   const resetValidation = (fieldName) => {
     switch (fieldName) {
       case 'email':
-        setIsValidEmail(!emailValidation(email));
-
+        dispatch({ type: 'VALIDATE_EMAIL' });
         break;
 
       case 'address':
-        setIsValidAddess(!addressValidation());
+        dispatch({ type: 'VALIDATE_ADDRESS' });
         break;
       case 'city':
-        setIsValidCity(!textValidation(city));
+        dispatch({ type: 'VALIDATE_CITY' });
         break;
       case 'mobile':
-        setIsValidMobile(!mobileValidation(mobile));
+        dispatch({ type: 'VALIDATE_MOBILE' });
         break;
       default:
         break;
     }
-    setErrors(errors.filter((error) => error.id !== fieldName));
+
+    dispatch({
+      type: 'REMOVE_ERROR',
+      payload: state.errors.filter((err) => err.id !== fieldName),
+    });
   };
 
   const formEntryHandler = (e) => {
     const { name, value } = e.target;
 
-    if (runReset) {
+    if (state.runReset) {
       resetValidation(name);
     }
 
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
+    dispatch({ type: 'FORM_ENTRY', payload: { [name]: value } });
+    //setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const formSubmitHandler = (e) => {
@@ -73,47 +154,61 @@ const ContactDetailsForm = ({
 
     //City validation should be done according to the selected country.
     //In general, city must be a drop down and the list of cities should be loaded upon country selection
-    const _isValidEmail = emailValidation(email);
+    const _isValidEmail = emailValidation(state.email);
     const _isValidAddress = addressValidation();
-    const _isValidCity = textValidation(city);
-    const _isValidMobile = mobileValidation(mobile);
+    const _isValidCity = textValidation(state.city);
+    const _isValidMobile = mobileValidation(state.mobile);
 
-    setIsValidEmail(!_isValidEmail);
-    setIsValidAddess(!_isValidAddress);
-    setIsValidCity(!_isValidCity);
-    setIsValidMobile(!_isValidMobile);
+    dispatch({
+      type: 'VALIDATION',
+      payload: {
+        email: !_isValidEmail,
+        address: !_isValidAddress,
+        city: !_isValidCity,
+        mobile: !_isValidMobile,
+      },
+    });
 
     if (_isValidEmail && _isValidAddress && _isValidCity && _isValidMobile) {
       forwardFormData(formData);
     } else {
-      setRunReset(true);
+      dispatch({ type: 'RESET', payload: true });
 
       if (!_isValidEmail) {
-        setErrors((prevErrors) => [
-          ...prevErrors,
-          { id: 'email', message: 'Please enter a valid email address.' },
-        ]);
+        dispatch({
+          type: 'ERROR',
+          payload: {
+            id: 'email',
+            message: 'Please enter a valid email address.',
+          },
+        });
       }
 
       if (!_isValidAddress) {
-        setErrors((prevErrors) => [
-          ...prevErrors,
-          { id: 'address', message: 'Please enter more detailed address.' },
-        ]);
+        dispatch({
+          type: 'ERROR',
+          payload: {
+            id: 'address',
+            message: 'Please enter more detailed address.',
+          },
+        });
       }
 
       if (!_isValidCity) {
-        setErrors((prevErrors) => [
-          ...prevErrors,
-          { id: 'city', message: 'Please enter a valid city.' },
-        ]);
+        dispatch({
+          type: 'ERROR',
+          payload: { id: 'city', message: 'Please enter a valid city.' },
+        });
       }
 
       if (!_isValidMobile) {
-        setErrors((prevErrors) => [
-          ...prevErrors,
-          { id: 'mobile', message: 'Please enter a valid mobile number.' },
-        ]);
+        dispatch({
+          type: 'ERROR',
+          payload: {
+            id: 'mobile',
+            message: 'Please enter a valid mobile number.',
+          },
+        });
       }
     }
   };
@@ -124,20 +219,20 @@ const ContactDetailsForm = ({
         <Input
           type='text'
           name='email'
-          value={email}
+          value={state.email}
           onChange={formEntryHandler}
           label='Email'
           placeholder='Please enter your email address'
-          invalid={isValidEmail}
+          invalid={state.isValid.email}
         />
         <Input
           type='text'
-          value={city}
+          value={state.city}
           onChange={formEntryHandler}
           label='City'
           name='city'
           placeholder='Please enter your city'
-          invalid={isValidCity}
+          invalid={state.isValid.city}
         />
         <Dropdown
           options={countries}
@@ -145,7 +240,7 @@ const ContactDetailsForm = ({
           selectTitle='Please select country'
           title='Country'
           onChange={formEntryHandler}
-          value={country}
+          value={state.country}
         />
         <TextArea
           name='address'
@@ -154,21 +249,21 @@ const ContactDetailsForm = ({
           maxLength={300}
           showCounter
           onChange={formEntryHandler}
-          value={address}
-          notValid={isValidAddress}
+          value={state.address}
+          notValid={state.isValid.address}
         />
         <Input
           type='text'
-          value={mobile}
+          value={state.mobile}
           onChange={formEntryHandler}
           label='Mobile Phone'
           placeholder='Please enter your mobile phone number'
           name='mobile'
-          invalid={isValidMobile}
+          invalid={state.isValid.mobile}
         />
         <Button title='Continue' type='submit' />
       </form>
-      <ErrorWindow errorsArr={errors} />
+      <ErrorWindow errorsArr={state.errors} />
     </FormCard>
   );
 };
